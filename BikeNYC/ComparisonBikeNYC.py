@@ -642,13 +642,13 @@ if X00:
         print(str(count) + '/' + str(count_sum))
 
 # Comparison
-X_train, T_train, P_train, Y_train, X_test, T_test, P_test, Y_test, MM = lzq_load_data(len_test,
-                                                                                       len_closeness,
-                                                                                       len_period,
-                                                                                       len_trend,
-                                                                                       T_closeness,
-                                                                                       T_period,
-                                                                                       T_trend)
+# X_train, T_train, P_train, Y_train, X_test, T_test, P_test, Y_test, MM = lzq_load_data(len_test,
+#                                                                                        len_closeness,
+#                                                                                        len_period,
+#                                                                                        len_trend,
+#                                                                                        T_closeness,
+#                                                                                        T_period,
+#                                                                                        T_trend)
 
 # np.set_printoptions(precision=4, suppress=True)
 # print('MODEL                     RMSE  MAE')
