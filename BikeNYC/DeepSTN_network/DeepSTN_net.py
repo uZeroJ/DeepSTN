@@ -193,8 +193,8 @@ def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12,
                  T_x13, T_x14, T_x15])
 
-        # poi_time = Multiply()([poi_in_p, T_x])
-        poi_time = Multiply()([poi_in, T_x])
+        poi_time = Multiply()([poi_in_p, T_x])
+        # poi_time = Multiply()([poi_in, T_x])
         if isPT_F:
             poi_time = Conv2D(filters=PT_F, kernel_size=(1, 1), padding="same")(poi_time)
             print('PT_F = YES')
