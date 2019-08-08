@@ -36,7 +36,7 @@ setproctitle.setproctitle('Comprison Start! @ ZiqianLin')  # from V1707
 
 from tensorflow.python.keras import backend as K
 
-K.set_image_data_format('channels_first')
+# K.set_image_data_format('channels_first')
 
 # hyperparameters
 epoch = 1  # 350  # number of epoch at training stage

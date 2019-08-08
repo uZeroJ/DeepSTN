@@ -1,6 +1,6 @@
 from tensorflow.python.keras import backend as K
 
-K.set_image_data_format('channels_first')
+# K.set_image_data_format('channels_first')
 import numpy as np
 
 from tensorflow.python.keras.optimizers import Adam
@@ -14,10 +14,12 @@ import BikeNYC.DeepSTN_network.metrics as metrics
 
 # Relu-BN-Conv2D 3x3
 def conv_unit0(Fin, Fout, drop, H, W):
-    unit_input = Input(shape=(Fin, H, W))
-    unit_input_p = Permute((2, 3, 1))(unit_input)
+    # unit_input = Input(shape=(Fin, H, W))
+    unit_input = Input(shape=(H, W, Fin))
+    # unit_input_p = Permute((2, 3, 1))(unit_input)
 
-    unit_conv = Activation('relu')(unit_input_p)
+    # unit_conv = Activation('relu')(unit_input_p)
+    unit_conv = Activation('relu')(unit_input)
     unit_conv = BatchNormalization()(unit_conv)
     unit_conv = Dropout(drop)(unit_conv)
     unit_output = Conv2D(filters=Fout, kernel_size=(3, 3), padding="same")(unit_conv)
@@ -28,10 +30,11 @@ def conv_unit0(Fin, Fout, drop, H, W):
 
 # Relu-BN-Conv2D 1x1
 def conv_unit1(Fin, Fout, drop, H, W):
-    unit_input = Input(shape=(Fin, H, W))
-    unit_input_p = Permute((2, 3, 1))(unit_input)
+    unit_input = Input(shape=(H, W, Fin))
+    # unit_input = Input(shape=(Fin, H, W))
+    # unit_input_p = Permute((2, 3, 1))(unit_input)
 
-    unit_conv = Activation('relu')(unit_input_p)
+    unit_conv = Activation('relu')(unit_input)
     unit_conv = BatchNormalization()(unit_conv)
     unit_conv = Dropout(drop)(unit_conv)
     unit_output = Conv2D(filters=Fout, kernel_size=(1, 1), padding="same")(unit_conv)
@@ -42,10 +45,12 @@ def conv_unit1(Fin, Fout, drop, H, W):
 
 # new resdual block
 def Res_plus(name, F, Fplus, rate, drop, H, W):
-    cl_input = Input(shape=(F, H, W))
-    cl_input_p = Permute((2, 3, 1))(cl_input)
+    # cl_input = Input(shape=(F, H, W))
+    cl_input = Input(shape=(H, W, F))
+    # cl_input_p = Permute((2, 3, 1))(cl_input)
 
-    cl_conv1A = conv_unit0(F, F - Fplus, drop, H, W)(cl_input_p)
+    # cl_conv1A = conv_unit0(F, F - Fplus, drop, H, W)(cl_input_p)
+    cl_conv1A = conv_unit0(F, F - Fplus, drop, H, W)(cl_input)
 
     if rate == 1:
         cl_conv1B = cl_input
@@ -62,7 +67,8 @@ def Res_plus(name, F, Fplus, rate, drop, H, W):
 
     cl_conv1B = plus_conv(cl_conv1B)
 
-    cl_conv1B = Reshape((Fplus, H, W))(cl_conv1B)
+    # cl_conv1B = Reshape((Fplus, H, W))(cl_conv1B)
+    cl_conv1B = Reshape((H, W, Fplus))(cl_conv1B)
 
     cl_conv1 = Concatenate(axis=3)([cl_conv1A, cl_conv1B])
 
@@ -77,10 +83,12 @@ def Res_plus(name, F, Fplus, rate, drop, H, W):
 
 # normal residual block
 def Res_normal(name, F, drop, H, W):
-    cl_input = Input(shape=(F, H, W))
-    cl_input_p = Permute((2, 3, 1))(cl_input)
+    # cl_input = Input(shape=(F, H, W))
+    cl_input = Input(shape=(H, W, F))
+    # cl_input_p = Permute((2, 3, 1))(cl_input)
 
-    cl_conv1 = conv_unit0(F, F, drop, H, W)(cl_input_p)
+    # cl_conv1 = conv_unit0(F, F, drop, H, W)(cl_input_p)
+    cl_conv1 = conv_unit0(F, F, drop, H, W)(cl_input)
 
     cl_conv2 = conv_unit0(F, F, drop, H, W)(cl_conv1)
 
