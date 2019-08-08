@@ -15,6 +15,7 @@ import BikeNYC.DeepSTN_network.metrics as metrics
 # Relu-BN-Conv2D 3x3
 def conv_unit0(Fin, Fout, drop, H, W):
     unit_input = Input(shape=(Fin, H, W))
+    unit_input = Permute((2, 3, 1))(unit_input)
 
     unit_conv = Activation('relu')(unit_input)
     unit_conv = BatchNormalization()(unit_conv)
@@ -28,6 +29,7 @@ def conv_unit0(Fin, Fout, drop, H, W):
 # Relu-BN-Conv2D 1x1
 def conv_unit1(Fin, Fout, drop, H, W):
     unit_input = Input(shape=(Fin, H, W))
+    unit_input = Permute((2, 3, 1))(unit_input)
 
     unit_conv = Activation('relu')(unit_input)
     unit_conv = BatchNormalization()(unit_conv)
@@ -41,6 +43,7 @@ def conv_unit1(Fin, Fout, drop, H, W):
 # new resdual block
 def Res_plus(name, F, Fplus, rate, drop, H, W):
     cl_input = Input(shape=(F, H, W))
+    cl_input = Permute((2, 3, 1))(cl_input)
 
     cl_conv1A = conv_unit0(F, F - Fplus, drop, H, W)(cl_input)
 
@@ -61,7 +64,7 @@ def Res_plus(name, F, Fplus, rate, drop, H, W):
 
     cl_conv1B = Reshape((Fplus, H, W))(cl_conv1B)
 
-    cl_conv1 = Concatenate(axis=1)([cl_conv1A, cl_conv1B])
+    cl_conv1 = Concatenate(axis=3)([cl_conv1A, cl_conv1B])
 
     cl_conv2 = conv_unit0(F, F, drop, H, W)(cl_conv1)
 
@@ -75,6 +78,7 @@ def Res_plus(name, F, Fplus, rate, drop, H, W):
 # normal residual block
 def Res_normal(name, F, drop, H, W):
     cl_input = Input(shape=(F, H, W))
+    cl_input = Permute((2, 3, 1))(cl_input)
 
     cl_conv1 = conv_unit0(F, F, drop, H, W)(cl_input)
 
@@ -88,12 +92,14 @@ def Res_normal(name, F, drop, H, W):
 
 
 def cpt_slice(x, h1, h2):
-    return x[:, h1:h2, :, :]
+    # return x[:, h1:h2, :, :]
+    return x[:, :, :, h1:h2]
 
 
 # transfer Time vector to a number (e.g. corresponding to filters = 1 in Conv2D)  
 def T_trans(T, T_F, H, W):
     T_in = Input(shape=(T + 7, H, W))
+    T_in = Permute((2, 3, 1))(T_in)
     T_mid = Conv2D(filters=T_F, kernel_size=(1, 1), padding="same")(T_in)
     T_act = Activation('relu')(T_mid)
     T_fin = Conv2D(filters=1, kernel_size=(1, 1), padding="same")(T_act)
@@ -107,8 +113,10 @@ def T_trans(T, T_F, H, W):
 def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
     if 1:
         poi_in = Input(shape=(P_N, H, W))
-        # T_times/day + 7days/week 
+        poi_in = Permute((2, 3, 1))(poi_in)
+        # T_times/day + 7days/week
         time_in = Input(shape=(T + 7, H, W))
+        time_in = Permute((2, 3, 1))(time_in)
 
         if P_N >= 2:
             T_x0 = T_trans(T, T_F, H, W)(time_in)
@@ -145,42 +153,42 @@ def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
         if P_N == 1:
             T_x = T_trans(T, T_F, H, W)(time_in)
         if P_N == 2:
-            T_x = Concatenate(axis=1)([T_x0, T_x1])
+            T_x = Concatenate(axis=3)([T_x0, T_x1])
         if P_N == 3:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2])
         if P_N == 4:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3])
         if P_N == 5:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4])
         if P_N == 6:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5])
         if P_N == 7:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6])
         if P_N == 8:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7])
         if P_N == 9:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8])
         if P_N == 10:
-            T_x = Concatenate(axis=1)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9])
+            T_x = Concatenate(axis=3)([T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9])
         if P_N == 11:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10])
         if P_N == 12:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11])
         if P_N == 13:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12])
         if P_N == 14:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12,
                  T_x13])
         if P_N == 15:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12,
                  T_x13, T_x14])
         if P_N == 16:
-            T_x = Concatenate(axis=1)(
+            T_x = Concatenate(axis=3)(
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12,
                  T_x13, T_x14, T_x15])
 
@@ -220,7 +228,6 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
     cut3 = int(cut2 + channel * t)
 
     cpt_input = Input(shape=(all_channel, H, W))
-
     cpt_input = Permute((2, 3, 1))(cpt_input)
 
     c_input = Lambda(cpt_slice, arguments={'h1': cut0, 'h2': cut1})(cpt_input)
@@ -233,14 +240,16 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
 
     if is_pt:
         poi_in = Input(shape=(P_N, H, W))
+        poi_in = Permute((2, 3, 1))(poi_in)
         # T_times/day + 7days/week 
         time_in = Input(shape=(T + 7, H, W))
+        time_in = Permute((2, 3, 1))(time_in)
 
         PT_model = PT_trans('PT_trans', P_N, PT_F, T, T_F, H, W, isPT_F)
 
         poi_time = PT_model([poi_in, time_in])
 
-        cpt_con1 = Concatenate(axis=1)([c_out1, p_out1, t_out1, poi_time])
+        cpt_con1 = Concatenate(axis=3)([c_out1, p_out1, t_out1, poi_time])
         if kernel1:
             cpt = conv_unit1(pre_F * 3 + PT_F * isPT_F + P_N * (not isPT_F), conv_F, drop, H, W)(
                 cpt_con1)
@@ -249,7 +258,7 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
                 cpt_con1)
 
     else:
-        cpt_con1 = Concatenate(axis=1)([c_out1, p_out1, t_out1])
+        cpt_con1 = Concatenate(axis=3)([c_out1, p_out1, t_out1])
         if kernel1:
             cpt = conv_unit1(pre_F * 3, conv_F, drop, H, W)(cpt_con1)
         else:
