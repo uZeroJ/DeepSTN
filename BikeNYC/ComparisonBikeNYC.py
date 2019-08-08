@@ -1,4 +1,5 @@
 # from __future__ import print_function
+import tensorflow as tf
 from BikeNYC.DATA.lzq_read_data_time_poi import lzq_load_data
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 # import cPickle as pickle
@@ -269,7 +270,6 @@ if X11:
         print('***** evaluate *****')
         # model.load_weights(file_conv)
         model = tf.keras.models.load_model(file_conv)
-        # model.(file_conv)
 
         Y_train = np.transpose(Y_train, axes=(0, 2, 3, 1))
         score = model.evaluate([X_train, P_train, T_train], Y_train,
@@ -304,7 +304,7 @@ if X11:
         print('iterate cost', time_end - time_start)
         print(str(count) + '/' + str(count_sum))
 
-# DSTN+ResPlus
+# DSTN+ResPlu
 if X10:
     setproctitle.setproctitle('BJMobile DSTN+ResPlus @ ZiqianLin')  # from V1707
     from BikeNYC.DeepSTN_network.DeepSTN_net import DeepSTN
