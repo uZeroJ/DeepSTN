@@ -112,8 +112,9 @@ def T_trans(T, T_F, H, W):
 # transfer Time vector and PoI matrix to time-weighted PoI matrix    
 def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
     if 1:
+        # Only poi need permute that time is permute by T_trans
         poi_in = Input(shape=(P_N, H, W))
-        # poi_in_p = Permute((2, 3, 1))(poi_in)
+        poi_in_p = Permute((2, 3, 1))(poi_in)
         # T_times/day + 7days/week
         time_in = Input(shape=(T + 7, H, W))
         # time_in_p = Permute((2, 3, 1))(time_in)
@@ -250,6 +251,7 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
 
         # poi_time = PT_model([poi_in_p, time_in_p])
         poi_time = PT_model([poi_in, time_in])
+        # TODO: need permutation? seems not as PT_model permute that
 
         cpt_con1 = Concatenate(axis=3)([c_out1, p_out1, t_out1, poi_time])
         if kernel1:
