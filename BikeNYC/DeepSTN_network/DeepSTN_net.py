@@ -113,45 +113,45 @@ def T_trans(T, T_F, H, W):
 def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
     if 1:
         poi_in = Input(shape=(P_N, H, W))
-        poi_in_p = Permute((2, 3, 1))(poi_in)
+        # poi_in_p = Permute((2, 3, 1))(poi_in)
         # T_times/day + 7days/week
         time_in = Input(shape=(T + 7, H, W))
-        time_in_p = Permute((2, 3, 1))(time_in)
+        # time_in_p = Permute((2, 3, 1))(time_in)
 
         if P_N >= 2:
-            T_x0 = T_trans(T, T_F, H, W)(time_in_p)
-            T_x1 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x0 = T_trans(T, T_F, H, W)(time_in)
+            T_x1 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 3:
-            T_x2 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x2 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 4:
-            T_x3 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x3 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 5:
-            T_x4 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x4 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 6:
-            T_x5 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x5 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 7:
-            T_x6 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x6 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 8:
-            T_x7 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x7 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 9:
-            T_x8 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x8 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 10:
-            T_x9 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x9 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 11:
-            T_x10 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x10 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 12:
-            T_x11 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x11 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 13:
-            T_x12 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x12 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 14:
-            T_x13 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x13 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 15:
-            T_x14 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x14 = T_trans(T, T_F, H, W)(time_in)
         if P_N >= 16:
-            T_x15 = T_trans(T, T_F, H, W)(time_in_p)
+            T_x15 = T_trans(T, T_F, H, W)(time_in)
 
         if P_N == 1:
-            T_x = T_trans(T, T_F, H, W)(time_in_p)
+            T_x = T_trans(T, T_F, H, W)(time_in)
         if P_N == 2:
             T_x = Concatenate(axis=3)([T_x0, T_x1])
         if P_N == 3:
@@ -192,7 +192,8 @@ def PT_trans(name, P_N, PT_F, T, T_F, H, W, isPT_F):
                 [T_x0, T_x1, T_x2, T_x3, T_x4, T_x5, T_x6, T_x7, T_x8, T_x9, T_x10, T_x11, T_x12,
                  T_x13, T_x14, T_x15])
 
-        poi_time = Multiply()([poi_in_p, T_x])
+        # poi_time = Multiply()([poi_in_p, T_x])
+        poi_time = Multiply()([poi_in, T_x])
         if isPT_F:
             poi_time = Conv2D(filters=PT_F, kernel_size=(1, 1), padding="same")(poi_time)
             print('PT_F = YES')
@@ -240,14 +241,15 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
 
     if is_pt:
         poi_in = Input(shape=(P_N, H, W))
-        poi_in_p = Permute((2, 3, 1))(poi_in)
+        # poi_in_p = Permute((2, 3, 1))(poi_in)
         # T_times/day + 7days/week 
         time_in = Input(shape=(T + 7, H, W))
-        time_in_p = Permute((2, 3, 1))(time_in)
+        # time_in_p = Permute((2, 3, 1))(time_in)
 
         PT_model = PT_trans('PT_trans', P_N, PT_F, T, T_F, H, W, isPT_F)
 
-        poi_time = PT_model([poi_in_p, time_in_p])
+        # poi_time = PT_model([poi_in_p, time_in_p])
+        poi_time = PT_model([poi_in, time_in])
 
         cpt_con1 = Concatenate(axis=3)([c_out1, p_out1, t_out1, poi_time])
         if kernel1:
