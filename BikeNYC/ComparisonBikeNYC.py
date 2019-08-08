@@ -249,7 +249,7 @@ if X11:
                 monitor='val_rmse',
                 verbose=1,
                 save_best_only=True,
-                save_weights_only=True,
+                # save_weights_only=True,
                 mode='min',
                 period=1
             )
@@ -267,7 +267,9 @@ if X11:
 
         print('=' * 10)
         print('***** evaluate *****')
-        model.load_weights(file_conv)
+        # model.load_weights(file_conv)
+        model = tf.keras.models.load_model(file_conv)
+        # model.(file_conv)
 
         Y_train = np.transpose(Y_train, axes=(0, 2, 3, 1))
         score = model.evaluate([X_train, P_train, T_train], Y_train,
