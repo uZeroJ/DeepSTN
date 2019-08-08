@@ -255,6 +255,8 @@ if X11:
 
             print('=' * 10)
             print("***** training conv_model *****")
+            # Permute target
+            Y_train = np.transpose(Y_train, axes=(0, 2, 3, 1))
             history = model.fit([X_train, P_train, T_train], Y_train,
                                 epochs=epoch,
                                 batch_size=batch_size,
@@ -266,12 +268,14 @@ if X11:
         print('***** evaluate *****')
         model.load_weights(file_conv)
 
+        Y_train = np.transpose(Y_train, axes=(0, 2, 3, 1))
         score = model.evaluate([X_train, P_train, T_train], Y_train,
                                batch_size=Y_train.shape[0] // 48, verbose=0)
         print('              mse     rmse    mae')
         print('Train score:', end=' ')
         np.set_printoptions(precision=6, suppress=True)
         print(np.array(score))
+        Y_test = np.transpose(Y_test, axes=(0, 2, 3, 1))
         score = model.evaluate([X_test, P_test, T_test], Y_test, batch_size=Y_test.shape[0],
                                verbose=0)
         print('Test  score:', end=' ')
