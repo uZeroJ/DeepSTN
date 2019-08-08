@@ -5,7 +5,7 @@ import numpy as np
 
 from tensorflow.python.keras.optimizers import Adam
 from tensorflow.python.keras.layers import Input, Activation, Dropout, BatchNormalization, \
-    AveragePooling2D, Multiply
+    AveragePooling2D, Multiply, Permute
 from tensorflow.python.keras.layers import Lambda, Reshape, Concatenate, Add
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers.convolutional import Conv2D
@@ -220,6 +220,8 @@ def DeepSTN(H=21, W=12, channel=2,  # H-map_height W-map_width channel-map_chann
     cut3 = int(cut2 + channel * t)
 
     cpt_input = Input(shape=(all_channel, H, W))
+
+    cpt_input = Permute((2, 3, 1))(cpt_input)
 
     c_input = Lambda(cpt_slice, arguments={'h1': cut0, 'h2': cut1})(cpt_input)
     p_input = Lambda(cpt_slice, arguments={'h1': cut1, 'h2': cut2})(cpt_input)
